@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "MQTTClient.h"
+#include "NetDebugger.h"
 
 namespace MQTT
 {
@@ -314,7 +315,7 @@ namespace MQTT
 		URL::parse(options.serverURL, host, port);
 		this->mConnectOptions = options;
 		boost::system::error_code ec;
-		boost::asio::ip::tcp::resolver rslv(mSocket.get_io_service());
+		boost::asio::ip::tcp::resolver rslv(theApp.GetIOContext());
 		boost::asio::ip::tcp::resolver::query qry(host, std::to_string(port));
 		boost::asio::ip::tcp::resolver::iterator iter = rslv.resolve(qry, ec);
 		boost::asio::ip::tcp::resolver::iterator end;
@@ -342,7 +343,7 @@ namespace MQTT
 									sec = 1;
 
 								client->mPingTimer = std::make_shared<boost::asio::deadline_timer>(
-									client->mSocket.get_io_service(),
+									theApp.GetIOContext(),
 									boost::posix_time::seconds(sec)
 									);
 								client->onStartPingTimer(client);
